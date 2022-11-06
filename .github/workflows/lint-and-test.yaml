@@ -71,7 +71,7 @@ jobs:
             echo TAG $TAG
             echo "::set-output name=docker_image_tag_ci::$TAG"
 
-      - name: Build docker image with cache
+      - name: Build and push docker image with cache
         if: ${{ env.USE_CACHE == 'true' }}
         run: |
           docker buildx bake \
