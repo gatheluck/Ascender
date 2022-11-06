@@ -39,21 +39,21 @@ jobs:
         if: ${{ env.USE_CACHE == 'true' }}
         uses: actions/cache@v3
         with:
-          path: /tmp/.buildx-cache/${{ matrix.python-version }}
-          key: buildx-${{ github.ref }}-${{ github.sha }}
+          path: /tmp/.buildx-cache
+          key: buildx-${{ matrix.python-version }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            buildx-${{ github.ref }}
-            buildx-
+            buildx-${{ matrix.python-version }}-${{ github.ref }}
+            buildx-${{ matrix.python-version }}-
 
       - name: Cache Docker registry
         if: ${{ env.USE_CACHE == 'true' }}
         uses: actions/cache@v3
         with:
-          path: /tmp/docker-registry/${{ matrix.python-version }}
-          key: docker-registry-${{ github.ref }}-${{ github.sha }}
+          path: /tmp/docker-registry
+          key: docker-registry-${{ matrix.python-version }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            docker-registry-${{ github.ref }}
-            docker-registry-
+            docker-registry-${{ matrix.python-version }}-${{ github.ref }}
+            docker-registry-${{ matrix.python-version }}-
 
       - name: Boot-up local Docker registry
         if: ${{ env.USE_CACHE == 'true' }}
@@ -77,8 +77,8 @@ jobs:
           docker buildx bake \
           --builder="${{ steps.buildx.outputs.name }}" \
           --set="core.args.PYTHON_VERSION=${{ matrix.python-version }}" \
-          --set="*.cache-from=type=local,src=/tmp/.buildx-cache/${{ matrix.python-version }}" \
-          --set="*.cache-to=type=local,dest=/tmp/.buildx-cache-new/${{ matrix.python-version }}" \
+          --set="*.cache-from=type=local,src=/tmp/.buildx-cache" \
+          --set="*.cache-to=type=local,dest=/tmp/.buildx-cache-new" \
           --push \
           -f docker-compose.yaml
         working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
