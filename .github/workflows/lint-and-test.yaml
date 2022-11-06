@@ -78,7 +78,7 @@ jobs:
           --builder="${{ steps.buildx.outputs.name }}" \
           --set="core.args.PYTHON_VERSION=${{ matrix.python-version }}" \
           --set="*.cache-from=type=local,src=/tmp/.buildx-cache" \
-          --set="*.cache-to=type=local,dest=/tmp/.buildx-cache-new" \
+          --set="*.cache-to=type=local,dest=/tmp/.buildx-cache" \
           --push \
           -f docker-compose.yaml
         working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
@@ -120,8 +120,8 @@ jobs:
         # Temp fix
         # https://github.com/docker/build-push-action/issues/252
         # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        if: ${{ env.USE_CACHE == 'true' }}
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # - name: Move cache
+      #   if: ${{ env.USE_CACHE == 'true' }}
+      #   run: |
+      #     rm -rf /tmp/.buildx-cache
+      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
