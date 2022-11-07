@@ -1,5 +1,10 @@
 name: tests
-on: [pull_request]
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
 
 env:
   DOCKER_FILE_DIRECTORY: environments
