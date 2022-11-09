@@ -83,6 +83,7 @@ jobs:
           --set="core.args.PYTHON_VERSION=${{ matrix.python-version }}" \
           --set="*.cache-from=type=local,src=/tmp/.buildx-cache" \
           --set="*.cache-to=type=local,dest=/tmp/.buildx-cache" \
+          --load \
           -f docker-compose.yaml
         working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
 
