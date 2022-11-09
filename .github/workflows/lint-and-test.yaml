@@ -49,31 +49,31 @@ jobs:
             buildx-${{ matrix.python-version }}-${{ github.ref }}
             buildx-${{ matrix.python-version }}-
 
-      - name: Cache Docker registry
-        if: ${{ env.USE_CACHE == 'true' }}
-        uses: actions/cache@v3
-        with:
-          path: /tmp/docker-registry
-          key: docker-registry-${{ matrix.python-version }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            docker-registry-${{ matrix.python-version }}-${{ github.ref }}
-            docker-registry-${{ matrix.python-version }}-
+      # - name: Cache Docker registry
+      #   if: ${{ env.USE_CACHE == 'true' }}
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: /tmp/docker-registry
+      #     key: docker-registry-${{ matrix.python-version }}-${{ github.ref }}-${{ github.sha }}
+      #     restore-keys: |
+      #       docker-registry-${{ matrix.python-version }}-${{ github.ref }}
+      #       docker-registry-${{ matrix.python-version }}-
 
-      - name: Boot-up local Docker registry
-        if: ${{ env.USE_CACHE == 'true' }}
-        run: docker run -d -p 5000:5000 --restart=always --name registry -v /tmp/docker-registry:/var/lib/registry registry:2
+      # - name: Boot-up local Docker registry
+      #   if: ${{ env.USE_CACHE == 'true' }}
+      #   run: docker run -d -p 5000:5000 --restart=always --name registry -v /tmp/docker-registry:/var/lib/registry registry:2
       
-      - name: Wait for Docker registry
-        if: ${{ env.USE_CACHE == 'true' }}
-        run: npx wait-on --httpTimeout 30000 tcp:5000
+      # - name: Wait for Docker registry
+      #   if: ${{ env.USE_CACHE == 'true' }}
+      #   run: npx wait-on --httpTimeout 30000 tcp:5000
 
-      - name: Generate Docker image tag
-        run: |
-            SHA=${{ github.sha }}
-            TAG=$(TZ=UTC-9 date '+%Y%m')-${SHA:0:7}
-            echo "DOCKER_IMAGE_TAG_CI=$TAG" >> $GITHUB_ENV
-            echo TAG $TAG
-            echo "::set-output name=docker_image_tag_ci::$TAG"
+      # - name: Generate Docker image tag
+      #   run: |
+      #       SHA=${{ github.sha }}
+      #       TAG=$(TZ=UTC-9 date '+%Y%m')-${SHA:0:7}
+      #       echo "DOCKER_IMAGE_TAG_CI=$TAG" >> $GITHUB_ENV
+      #       echo TAG $TAG
+      #       echo "::set-output name=docker_image_tag_ci::$TAG"
 
       - name: Build and push docker image with cache
         if: ${{ env.USE_CACHE == 'true' }}
@@ -83,7 +83,6 @@ jobs:
           --set="core.args.PYTHON_VERSION=${{ matrix.python-version }}" \
           --set="*.cache-from=type=local,src=/tmp/.buildx-cache" \
           --set="*.cache-to=type=local,dest=/tmp/.buildx-cache" \
-          --push \
           -f docker-compose.yaml
         working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
 
@@ -92,10 +91,10 @@ jobs:
         run: docker-compose build --parallel --build-arg PYTHON_VERSION=${{ matrix.python-version }} core
         working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
 
-      - name: Pull Docker image
-        if: ${{ env.USE_CACHE == 'true' }}
-        run: docker-compose pull
-        working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
+      # - name: Pull Docker image
+      #   if: ${{ env.USE_CACHE == 'true' }}
+      #   run: docker-compose pull
+      #   working-directory: ${{ env.DOCKER_COMPOSE_DIRECTORY }}
 
       - name: Create and start docker container
         run: docker-compose up --no-build -d
